@@ -1,4 +1,5 @@
 #define _XOPEN_SOURCE
+#define DIM 4
 
 #include <stdio.h>
 #include <cs50.h>
@@ -9,8 +10,8 @@ void draw(int board[]);
 void init(int board[]);
 void spawn(void);
 void score(void);
-void moveLeft(void);
-void moveRight(void);
+void moveLeft(int board[]);
+void moveRight(int board[]);
 void check(void);
 void play(void);
 
@@ -34,12 +35,13 @@ void play(void)
             switch (c)
             {
                 case 'a':
-                    moveLeft();
+                    moveLeft(board);
                     break;
                 case 'd':
-                    moveRight();
+                    moveRight(board);
                     break;
             }
+            draw(board);
         }
         while (c != 'q');
 }
@@ -74,4 +76,31 @@ void draw(int board[])
         }
     }
     printf("\n");
+}
+
+void moveLeft(int board[])
+{
+    for (int i = 0; i < 3; i++)
+    {
+        if (board[i] == board[i + 1])
+        {
+            board[i] *= 2;
+            board[i + 1] = 0;
+        }
+    }
+
+    // for (int i = 0; i < 3; i++)
+    // {
+    //     for (int j = i + 1; j > 1; j--)
+    //     {
+    //         if (board[j - 1] == 0)
+    //         {
+
+    //         }
+    //     }
+    // }
+}
+
+void moveRight(int board[])
+{
 }
