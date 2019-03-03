@@ -38,7 +38,7 @@ void play(void)
                     moveLeft(board);
                     break;
                 case 'd':
-                    moveRight(board);
+                    //moveRight(board);
                     break;
             }
             draw(board);
@@ -80,48 +80,58 @@ void draw(int board[])
 
 void moveLeft(int board[])
 {
-    for (int i = 0; i < 3; i++)
+    int i = 0;
+    int j = 1;
+    while (i < 3)
     {
-        if (board[i] == board[i + 1])
+        while (board[j] == 0 && j < 4)
+        {
+            j++;
+        }
+        if (board[i] == board[j])
         {
             board[i] *= 2;
-            board[i + 1] = 0;
+            board[j] = 0;
         }
+        i = j;
+        j++;
     }
 
-    for (int i = 0; i < 3; i++)
+    for (int k = 0; k < 3; k++)
     {
-        for (int j = i + 1; j < 4; j++)
+        for (int l = k + 1; l < 4; l++)
         {
-            if (board[i] == 0 && board[j] > 0)
+            if (board[k] == 0 && board[l] > 0)
             {
-                board[i] = board[j];
-                board[j] = 0;
+                board[k] = board[l];
+                board[l] = 0;
             }
         }
     }
 }
 
-void moveRight(int board[])
-{
-    for (int i = 0; i < 3; i++)
-    {
-        if (board[i] == board[i + 1])
-        {
-            board[i] *= 2;
-            board[i + 1] = 0;
-        }
-    }
+// void moveRight(int board[])
+// {
+//     for (int i = 0; i < 3; i++)
+//     {
+//         if (board[i] == board[i + 1])
+//         {
+//             board[i] *= 2;
+//             board[i + 1] = 0;
+//         }
+//     }
 
-    for (int i = 0; i < 3; i++)
-    {
-        for (int j = i + 1; j < 4; j++)
-        {
-            if (board[j] == 0 && board[i] > 0)
-            {
-                board[j] = board[i];
-                board[i] = 0;
-            }
-        }
-    }
-}
+
+    // for (int i = 0; i < 3; i++)
+    // {
+    //     for (int j = i + 1; j < 4; j++)
+    //     {
+    //         if (board[j] == 0 && board[i] > 0)
+    //         {
+    //             board[j] = board[i];
+    //             board[i] = 0;
+    //         }
+    //     }
+    // }
+// }
+
