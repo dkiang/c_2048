@@ -89,16 +89,17 @@ void moveLeft(int board[])
         }
     }
 
-    // for (int i = 0; i < 3; i++)
-    // {
-    //     for (int j = i + 1; j > 1; j--)
-    //     {
-    //         if (board[j - 1] == 0)
-    //         {
-
-    //         }
-    //     }
-    // }
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = i + 1; j < 4; j++)
+        {
+            if (board[i] == 0 && board[j] > 0)
+            {
+                board[i] = board[j];
+                board[j] = 0;
+            }
+        }
+    }
 }
 
 void moveRight(int board[])
