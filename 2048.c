@@ -23,11 +23,11 @@ void init(int board[][DIM]);
 void spawn(int board[][DIM]);
 void score(void);
 int combine_row(int arr[]);
-void move(int board[][DIM], char c);
-void moveRight(int board[]);
+int move(int board[][DIM], char c);
 void check(void);
 void play(void);
 void shift(int temp[]);
+bool checkwin(int board[][DIM]);
 
 int main(void)
 {
@@ -37,22 +37,29 @@ int main(void)
 
 void play(void)
 {
-		srand48(time(NULL));
-		int board[DIM][DIM] =  {{0, 0, 0, 0},
-				                {0, 0, 0, 0},
-                                {0, 0, 0, 0},
-                                {0, 0, 0, 0}};
-		init(board);
+	int score = 0;
+	srand48(time(NULL));
+	int board[DIM][DIM] =  {{0, 0, 0, 0},
+			                {0, 0, 0, 0},
+                            {0, 0, 0, 0},
+                            {0, 0, 0, 0}};
+	init(board);
+	draw(board);
+	char c;
+	do
+	{
+		c = get_char("Move: \n");
+		score += move(board, c);
+		spawn(board);
+		printf("Current score: %i\n", score);
 		draw(board);
-		char c;
-		do
+		if (checkwin(board))
 		{
-			c = get_char("Move: \n");
-			move(board, c);
-			spawn(board);
-			draw(board);
+			printf("Game over! Your score is %i.\n", score);
+			return;
 		}
-		while (c != QUIT);
+	}
+	while (c != QUIT);
 }
 
 // Picks two empty spots and fills them with 2
@@ -134,12 +141,12 @@ int combine_row(int arr[])
 	return points;
 }
 
-void move(int board[][DIM], char c)
+int move(int board[][DIM], char c)
 {
+	int score = 0;
 	for (int i = 0; i < DIM; i++)
 	{
 		int temp[DIM];
-
 		switch(c)
 		{
 			case LEFT:
@@ -150,7 +157,7 @@ void move(int board[][DIM], char c)
         		}
 
         	    // Combine numbers
-        		combine_row(temp);
+        		score += combine_row(temp);
         		// Shift all zeros to right
         		shift(temp);
 
@@ -165,7 +172,7 @@ void move(int board[][DIM], char c)
         		{
         			temp[j] = board[i][DIM - 1 - j];
         		}
-        		combine_row(temp);
+        		score += combine_row(temp);
         		shift(temp);
 				// Copy values back into board from right to left
 				for (int j = 0; j < DIM; j++)
@@ -178,7 +185,7 @@ void move(int board[][DIM], char c)
         		{
         			temp[j] = board[j][i];
         		}
-        		combine_row(temp);
+        		score += combine_row(temp);
         		shift(temp);
 				// Copy values back into column from up to down
 				for (int j = 0; j < DIM; j++)
@@ -191,7 +198,7 @@ void move(int board[][DIM], char c)
         		{
         			temp[j] = board[DIM - 1 - j][i];
         		}
-        		combine_row(temp);
+        		score += combine_row(temp);
         		shift(temp);
 				// Copy values back into column from down to up
 				for (int j = 0; j < DIM; j++)
@@ -199,8 +206,12 @@ void move(int board[][DIM], char c)
 					board[DIM - 1 - j][i] = temp[j];
 				}
 				break;
+			default:
+				printf("Command not recognized. Please try again.\n");
+				return 0;
 		}
 	}
+	return score;
 }
 
 // Moves all zeros in array to the right
@@ -217,4 +228,27 @@ void shift(int temp[])
 			}
 		}
 	}
+}
+
+bool checkwin(int board[][DIM])
+{
+	for (int i = 0; i < DIM - 1; i++)
+	{
+		for (int j = 0; j < DIM - 1; j++)
+		{
+			if (board[i][j] == 0 ||
+				board[i][j] == board[i][j + 1] ||
+			    board[i][j] == board[i + 1][j])
+			{
+				return false;
+			}
+		}
+	}
+	if (board[DIM - 1][DIM - 1] == 0 ||
+	    board[DIM - 1][DIM - 1] == board[DIM - 1][DIM - 2] ||
+	    board[DIM - 1][DIM - 1] == board[DIM - 2][DIM - 1])
+	{
+		return false;
+	}
+	return true;
 }
