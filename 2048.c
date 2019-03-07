@@ -1,3 +1,10 @@
+// 2048 by Douglas Kiang
+// 2019
+
+// git add .
+// git commit -m "Commit"
+// git push -u origin master
+
 #define _XOPEN_SOURCE
 #define DIM 4
 #define UP 'w'
@@ -20,8 +27,7 @@ void move(int board[][DIM], char c);
 void moveRight(int board[]);
 void check(void);
 void play(void);
-
-
+void shift(int temp[]);
 
 int main(void)
 {
@@ -43,6 +49,7 @@ void play(void)
 		{
 			c = get_char("Move: \n");
 			move(board, c);
+			spawn(board);
 			draw(board);
 		}
 		while (c != QUIT);
@@ -99,6 +106,8 @@ void draw(int board[][DIM])
 	}
 }
 
+// Looks for duplicate numbers that are adjacent or separated
+// by zeroes, combines them, and returns the value of any combined sums.
 int combine_row(int arr[])
 {
 	int points = 0;
@@ -130,27 +139,21 @@ void move(int board[][DIM], char c)
 	for (int i = 0; i < DIM; i++)
 	{
 		int temp[DIM];
-		// Load temp array from board
-		for (int j = 0; j < DIM; j++)
-		{
-			temp[j] = board[i][j];
-		}
-		combine_row(temp);
-		// Move zeros to left
-		for (int k = 0; k < DIM - 1; k++)
-		{
-			for (int l = k + 1; l < DIM; l++)
-			{
-				if (temp[k] == 0 && temp[l] > 0)
-				{
-					temp[k] = temp[l];
-					temp[l] = 0;
-				}
-			}
-		}
+
 		switch(c)
 		{
 			case LEFT:
+			// Load row into temporary array
+    			for (int j = 0; j < DIM; j++)
+        		{
+        			temp[j] = board[i][j];
+        		}
+
+        	    // Combine numbers
+        		combine_row(temp);
+        		// Shift all zeros to right
+        		shift(temp);
+
 				// Copy values back into board from left to right
 				for (int j = 0; j < DIM; j++)
 				{
@@ -158,169 +161,60 @@ void move(int board[][DIM], char c)
 				}
 				break;
 			case RIGHT:
+    			for (int j = 0; j < DIM; j++)
+        		{
+        			temp[j] = board[i][DIM - 1 - j];
+        		}
+        		combine_row(temp);
+        		shift(temp);
 				// Copy values back into board from right to left
 				for (int j = 0; j < DIM; j++)
 				{
 					board[i][DIM - 1 - j] = temp[j];
 				}
 				break;
+			case UP:
+    			for (int j = 0; j < DIM; j++)
+        		{
+        			temp[j] = board[j][i];
+        		}
+        		combine_row(temp);
+        		shift(temp);
+				// Copy values back into column from up to down
+				for (int j = 0; j < DIM; j++)
+				{
+					board[j][i] = temp[j];
+				}
+				break;
+			case DOWN:
+    			for (int j = 0; j < DIM; j++)
+        		{
+        			temp[j] = board[DIM - 1 - j][i];
+        		}
+        		combine_row(temp);
+        		shift(temp);
+				// Copy values back into column from down to up
+				for (int j = 0; j < DIM; j++)
+				{
+					board[DIM - 1 - j][i] = temp[j];
+				}
+				break;
 		}
 	}
 }
 
-// void moveRight(int board[])
-// {
-// 	for (int i = 0; i < DIM; i++)
-// 	{
-// 		combine_row(board[i]);
-
-// 		for (int k = 0; k < DIM - 1; k++)
-// 		{
-// 			for (int l = k + 1; l < DIM; l++)
-// 			{
-// 				if (board[l] == 0 && board[k] > 0)
-// 				{
-// 					board[l] = board[k];
-// 					board[k] = 0;
-// 				}
-// 			}
-// 		}
-// 	}
-// }
-
-
-
-// #define _XOPEN_SOURCE
-// #define DIM 4
-
-// #include <stdio.h>
-// #include <cs50.h>
-// #include <stdlib.h>
-// #include <time.h>
-
-// void draw(int board[]);
-// void init(int board[]);
-// void spawn(void);
-// void score(void);
-// void combine_row(int board[]);
-// void moveLeft(int board[]);
-// void moveRight(int board[]);
-// void check(void);
-// void play(void);
-
-
-
-// int main(void)
-// {
-//     play();
-//     return 0;
-// }
-
-// void play(void)
-// {
-//         int board[4] = {0, 0, 0, 0};
-//         init(board);
-//         draw(board);
-//         char c;
-//         do
-//         {
-//             c = get_char("Move: \n");
-//             switch (c)
-//             {
-//                 case 'a':
-//                     moveLeft(board);
-//                     break;
-//                 case 'd':
-//                     moveRight(board);
-//                     break;
-//             }
-//             draw(board);
-//         }
-//         while (c != 'q');
-// }
-
-// void init(int board[])
-// {
-//     srand48(time(NULL));
-//     int counter = 0;
-//     do
-//     {
-//         int place = (int)(drand48() * 4);
-//         if (board[place] == 0)
-//         {
-//             board[place] = (drand48() < 0.100) ? 4 : 2;
-//             counter++;
-//         }
-//     }
-//     while (counter < 2);
-// }
-
-// void draw(int board[])
-// {
-//     for (int i = 0; i < 4; i++)
-//     {
-//         if (board[i] == 0)
-//         {
-//             printf("%4c",'-');
-//         }
-//         else
-//         {
-//             printf("%4i",board[i]);
-//         }
-//     }
-//     printf("\n");
-// }
-
-// void combine_row(int board[])
-// {
-//     int i = 0;
-//     int j = 1;
-//     while (i < 3)
-//     {
-//         while (board[j] == 0 && j < 4)
-//         {
-//             j++;
-//         }
-//         if (board[i] == board[j])
-//         {
-//             board[i] *= 2;
-//             board[j] = 0;
-//         }
-//         i = j;
-//         j++;
-//     }
-// }
-
-// void moveLeft(int board[])
-// {
-//     combine_row(board);
-//     for (int k = 0; k < 3; k++)
-//     {
-//         for (int l = k + 1; l < 4; l++)
-//         {
-//             if (board[k] == 0 && board[l] > 0)
-//             {
-//                 board[k] = board[l];
-//                 board[l] = 0;
-//             }
-//         }
-//     }
-// }
-
-// void moveRight(int board[])
-// {
-//     combine_row(board);
-
-//     for (int k = 0; k < 3; k++)
-//     {
-//         for (int l = k + 1; l < 4; l++)
-//         {
-//             if (board[l] == 0 && board[k] > 0)
-//             {
-//                 board[l] = board[k];
-//                 board[k] = 0;
-//             }
-//         }
-//     }
-// }
-
+// Moves all zeros in array to the right
+void shift(int temp[])
+{
+    for (int k = 0; k < DIM - 1; k++)
+	{
+		for (int l = k + 1; l < DIM; l++)
+		{
+			if (temp[k] == 0 && temp[l] > 0)
+			{
+				temp[k] = temp[l];
+				temp[l] = 0;
+			}
+		}
+	}
+}
